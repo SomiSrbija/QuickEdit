@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using System.Drawing;
 using ScintillaNET;
@@ -9,6 +10,7 @@ namespace QuickEdit
     public partial class Form1 : Form
     {
         private string currentFile = string.Empty;
+        private bool isDarkMode = false;
 
         public Form1()
         {
@@ -24,9 +26,16 @@ namespace QuickEdit
 
         private void InitializeScintilla()
         {
+            // Set up the default style
+            scintilla1.StyleResetDefault();
+            scintilla1.Styles[Style.Default].Font = "Consolas";
+            scintilla1.Styles[Style.Default].Size = 10;
+            scintilla1.StyleClearAll();
+
+            // Line numbers
             scintilla1.Margins[0].Width = 16;
 
-            // Code folding settings
+            // Code folding
             scintilla1.SetProperty("fold", "1");
             scintilla1.SetProperty("fold.compact", "1");
 
@@ -51,6 +60,35 @@ namespace QuickEdit
             scintilla1.Markers[Marker.FolderTail].Symbol = MarkerSymbol.LCorner;
 
             scintilla1.AutomaticFold = (AutomaticFold.Show | AutomaticFold.Click | AutomaticFold.Change);
+
+            // Syntax highlighting for C#
+            scintilla1.Lexer = Lexer.Cpp;
+
+            scintilla1.Styles[Style.Cpp.Default].ForeColor = Color.Silver;
+            scintilla1.Styles[Style.Cpp.Comment].ForeColor = Color.Green;
+            scintilla1.Styles[Style.Cpp.CommentLine].ForeColor = Color.Green;
+            scintilla1.Styles[Style.Cpp.CommentDoc].ForeColor = Color.Gray;
+            scintilla1.Styles[Style.Cpp.Number].ForeColor = Color.Olive;
+            scintilla1.Styles[Style.Cpp.Word].ForeColor = Color.Blue;
+            scintilla1.Styles[Style.Cpp.Word2].ForeColor = Color.Blue;
+            scintilla1.Styles[Style.Cpp.String].ForeColor = Color.Red;
+            scintilla1.Styles[Style.Cpp.Character].ForeColor = Color.Red;
+            scintilla1.Styles[Style.Cpp.Verbatim].ForeColor = Color.Red;
+            scintilla1.Styles[Style.Cpp.StringEol].BackColor = Color.Pink;
+            scintilla1.Styles[Style.Cpp.Operator].ForeColor = Color.Purple;
+            scintilla1.Styles[Style.Cpp.Preprocessor].ForeColor = Color.Maroon;
+
+            scintilla1.SetKeywords(0, "abstract as base bool break byte case catch char checked class const continue decimal default delegate do double else enum event explicit extern false finally fixed float for foreach goto if implicit in int interface internal is lock long namespace new null object operator out override params private protected public readonly ref return sbyte sealed short sizeof stackalloc static string struct switch this throw true try typeof uint ulong unchecked unsafe ushort using virtual void volatile while");
+
+            // Set long lines
+            scintilla1.EdgeMode = EdgeMode.Background;
+            scintilla1.EdgeColumn = 80;
+            scintilla1.EdgeColor = Color.LightGray;
+
+            // Drag and drop
+            scintilla1.AllowDrop = true;
+            scintilla1.DragEnter += scintilla1_DragEnter;
+            scintilla1.DragDrop += scintilla1_DragDrop;
         }
 
         private void UpdateStatus(string message)
@@ -195,9 +233,108 @@ namespace QuickEdit
             }
         }
 
+        private void fontStyleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FontDialog fontDialog = new FontDialog();
+            if (fontDialog.ShowDialog() == DialogResult.OK)
+            {
+                scintilla1.Styles[Style.Default].Font = fontDialog.Font.Name;
+                scintilla1.Styles[Style.Default].Size = (int)fontDialog.Font.Size;
+                scintilla1.Styles[Style.Default].Italic = fontDialog.Font.Italic;
+                scintilla1.Styles[Style.Default].Bold = fontDialog.Font.Bold;
+                scintilla1.StyleClearAll();  // Apply the style change to all styles
+            }
+        }
+
+        private void fontSizeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FontDialog fontDialog = new FontDialog();
+            if (fontDialog.ShowDialog() == DialogResult.OK)
+            {
+                scintilla1.Styles[Style.Default].Size = (int)fontDialog.Font.Size;
+                scintilla1.StyleClearAll();  // Apply the style change to all styles
+            }
+        }
+
+        private void fontColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                scintilla1.Styles[Style.Default].ForeColor = colorDialog.Color;
+                scintilla1.StyleClearAll();  // Apply the color change to all styles
+            }
+        }
+
+        private void darkModeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (isDarkMode)
+            {
+                scintilla1.Styles[Style.Default].BackColor = Color.White;
+                scintilla1.Styles[Style.Default].ForeColor = Color.Black;
+                scintilla1.CaretForeColor = Color.Black;
+                this.BackColor = Color.White;
+                isDarkMode = false;
+            }
+            else
+            {
+                scintilla1.Styles[Style.Default].BackColor = Color.Black;
+                scintilla1.Styles[Style.Default].ForeColor = Color.White;
+                scintilla1.CaretForeColor = Color.White;
+                this.BackColor = Color.Black;
+                isDarkMode = true;
+            }
+            scintilla1.StyleClearAll();  // Apply the color change to all styles
+        }
+
+        private void findReplaceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (FindReplaceForm findReplaceForm = new FindReplaceForm(scintilla1))
+            {
+                findReplaceForm.ShowDialog(this);
+            }
+        }
+
+        private void wordCountToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int wordCount = scintilla1.Text.Split(new char[] { ' ', '\t', '\n' }, StringSplitOptions.RemoveEmptyEntries).Length;
+            MessageBox.Show($"Word Count: {wordCount}", "Word Count", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show("QuickEdit v1.0\nA simple text editor.", "About QuickEdit", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void scintilla1_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop) || e.Data.GetDataPresent(DataFormats.Text))
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
+        }
+
+        private void scintilla1_DragDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if (files.Length > 0)
+                {
+                    string fileContent = File.ReadAllText(files[0]);
+                    scintilla1.Text = fileContent;
+                    currentFile = files[0];
+                    UpdateStatus($"Opened {currentFile}");
+                }
+            }
+            else if (e.Data.GetDataPresent(DataFormats.Text))
+            {
+                scintilla1.Text += e.Data.GetData(DataFormats.Text).ToString();
+            }
         }
     }
 }
