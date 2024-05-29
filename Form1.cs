@@ -15,8 +15,13 @@ namespace QuickEdit
         public Form1()
         {
             InitializeComponent();
-            InitializeScintilla();
+            InitializeScintilla(scintilla1);
+            InitializeScintilla(scintilla2);
             UpdateStatus("");
+
+            this.KeyPreview = true;
+            this.KeyDown += new KeyEventHandler(Form1_KeyDown);
+            LoadSettings();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -24,71 +29,74 @@ namespace QuickEdit
             // Any initialization code you need when the form loads
         }
 
-        private void InitializeScintilla()
+        private void InitializeScintilla(Scintilla scintilla)
         {
             // Set up the default style
-            scintilla1.StyleResetDefault();
-            scintilla1.Styles[Style.Default].Font = "Consolas";
-            scintilla1.Styles[Style.Default].Size = 10;
-            scintilla1.StyleClearAll();
+            scintilla.StyleResetDefault();
+            scintilla.Styles[Style.Default].Font = "Consolas";
+            scintilla.Styles[Style.Default].Size = 10;
+            scintilla.StyleClearAll();
 
             // Line numbers
-            scintilla1.Margins[0].Width = 16;
+            scintilla.Margins[0].Width = 16;
 
             // Code folding
-            scintilla1.SetProperty("fold", "1");
-            scintilla1.SetProperty("fold.compact", "1");
+            scintilla.SetProperty("fold", "1");
+            scintilla.SetProperty("fold.compact", "1");
 
-            scintilla1.Margins[2].Type = MarginType.Symbol;
-            scintilla1.Margins[2].Mask = Marker.MaskFolders;
-            scintilla1.Margins[2].Sensitive = true;
-            scintilla1.Margins[2].Width = 20;
+            scintilla.Margins[2].Type = MarginType.Symbol;
+            scintilla.Margins[2].Mask = Marker.MaskFolders;
+            scintilla.Margins[2].Sensitive = true;
+            scintilla.Margins[2].Width = 20;
 
             // Configure a margin to display folding symbols
             for (int i = 25; i <= 31; i++)
             {
-                scintilla1.Markers[i].SetForeColor(SystemColors.ControlLightLight);
-                scintilla1.Markers[i].SetBackColor(SystemColors.ControlDark);
+                scintilla.Markers[i].SetForeColor(SystemColors.ControlLightLight);
+                scintilla.Markers[i].SetBackColor(SystemColors.ControlDark);
             }
 
-            scintilla1.Markers[Marker.Folder].Symbol = MarkerSymbol.BoxPlus;
-            scintilla1.Markers[Marker.FolderOpen].Symbol = MarkerSymbol.BoxMinus;
-            scintilla1.Markers[Marker.FolderEnd].Symbol = MarkerSymbol.BoxPlusConnected;
-            scintilla1.Markers[Marker.FolderMidTail].Symbol = MarkerSymbol.TCorner;
-            scintilla1.Markers[Marker.FolderOpenMid].Symbol = MarkerSymbol.BoxMinusConnected;
-            scintilla1.Markers[Marker.FolderSub].Symbol = MarkerSymbol.VLine;
-            scintilla1.Markers[Marker.FolderTail].Symbol = MarkerSymbol.LCorner;
+            scintilla.Markers[Marker.Folder].Symbol = MarkerSymbol.BoxPlus;
+            scintilla.Markers[Marker.FolderOpen].Symbol = MarkerSymbol.BoxMinus;
+            scintilla.Markers[Marker.FolderEnd].Symbol = MarkerSymbol.BoxPlusConnected;
+            scintilla.Markers[Marker.FolderMidTail].Symbol = MarkerSymbol.TCorner;
+            scintilla.Markers[Marker.FolderOpenMid].Symbol = MarkerSymbol.BoxMinusConnected;
+            scintilla.Markers[Marker.FolderSub].Symbol = MarkerSymbol.VLine;
+            scintilla.Markers[Marker.FolderTail].Symbol = MarkerSymbol.LCorner;
 
-            scintilla1.AutomaticFold = (AutomaticFold.Show | AutomaticFold.Click | AutomaticFold.Change);
+            scintilla.AutomaticFold = (AutomaticFold.Show | AutomaticFold.Click | AutomaticFold.Change);
 
             // Syntax highlighting for C#
-            scintilla1.Lexer = Lexer.Cpp;
+            scintilla.Lexer = Lexer.Cpp;
 
-            scintilla1.Styles[Style.Cpp.Default].ForeColor = Color.Silver;
-            scintilla1.Styles[Style.Cpp.Comment].ForeColor = Color.Green;
-            scintilla1.Styles[Style.Cpp.CommentLine].ForeColor = Color.Green;
-            scintilla1.Styles[Style.Cpp.CommentDoc].ForeColor = Color.Gray;
-            scintilla1.Styles[Style.Cpp.Number].ForeColor = Color.Olive;
-            scintilla1.Styles[Style.Cpp.Word].ForeColor = Color.Blue;
-            scintilla1.Styles[Style.Cpp.Word2].ForeColor = Color.Blue;
-            scintilla1.Styles[Style.Cpp.String].ForeColor = Color.Red;
-            scintilla1.Styles[Style.Cpp.Character].ForeColor = Color.Red;
-            scintilla1.Styles[Style.Cpp.Verbatim].ForeColor = Color.Red;
-            scintilla1.Styles[Style.Cpp.StringEol].BackColor = Color.Pink;
-            scintilla1.Styles[Style.Cpp.Operator].ForeColor = Color.Purple;
-            scintilla1.Styles[Style.Cpp.Preprocessor].ForeColor = Color.Maroon;
+            scintilla.Styles[Style.Cpp.Default].ForeColor = Color.Silver;
+            scintilla.Styles[Style.Cpp.Comment].ForeColor = Color.Green;
+            scintilla.Styles[Style.Cpp.CommentLine].ForeColor = Color.Green;
+            scintilla.Styles[Style.Cpp.CommentDoc].ForeColor = Color.Gray;
+            scintilla.Styles[Style.Cpp.Number].ForeColor = Color.Olive;
+            scintilla.Styles[Style.Cpp.Word].ForeColor = Color.Blue;
+            scintilla.Styles[Style.Cpp.Word2].ForeColor = Color.Blue;
+            scintilla.Styles[Style.Cpp.String].ForeColor = Color.Red;
+            scintilla.Styles[Style.Cpp.Character].ForeColor = Color.Red;
+            scintilla.Styles[Style.Cpp.Verbatim].ForeColor = Color.Red;
+            scintilla.Styles[Style.Cpp.StringEol].BackColor = Color.Pink;
+            scintilla.Styles[Style.Cpp.Operator].ForeColor = Color.Purple;
+            scintilla.Styles[Style.Cpp.Preprocessor].ForeColor = Color.Maroon;
 
-            scintilla1.SetKeywords(0, "abstract as base bool break byte case catch char checked class const continue decimal default delegate do double else enum event explicit extern false finally fixed float for foreach goto if implicit in int interface internal is lock long namespace new null object operator out override params private protected public readonly ref return sbyte sealed short sizeof stackalloc static string struct switch this throw true try typeof uint ulong unchecked unsafe ushort using virtual void volatile while");
+            scintilla.SetKeywords(0, "abstract as base bool break byte case catch char checked class const continue decimal default delegate do double else enum event explicit extern false finally fixed float for foreach goto if implicit in int interface internal is lock long namespace new null object operator out override params private protected public readonly ref return sbyte sealed short sizeof stackalloc static string struct switch this throw true try typeof uint ulong unchecked unsafe ushort using virtual void volatile while");
 
             // Set long lines
-            scintilla1.EdgeMode = EdgeMode.Background;
-            scintilla1.EdgeColumn = 80;
-            scintilla1.EdgeColor = Color.LightGray;
+            scintilla.EdgeMode = EdgeMode.Background;
+            scintilla.EdgeColumn = 80;
+            scintilla.EdgeColor = Color.LightGray;
 
             // Drag and drop
-            scintilla1.AllowDrop = true;
-            scintilla1.DragEnter += scintilla1_DragEnter;
-            scintilla1.DragDrop += scintilla1_DragDrop;
+            scintilla.AllowDrop = true;
+            scintilla.DragEnter += scintilla1_DragEnter;
+            scintilla.DragDrop += scintilla1_DragDrop;
+
+            // Inline Error Detection
+            scintilla.UpdateUI += scintilla_UpdateUI;
         }
 
         private void UpdateStatus(string message)
@@ -334,6 +342,165 @@ namespace QuickEdit
             else if (e.Data.GetDataPresent(DataFormats.Text))
             {
                 scintilla1.Text += e.Data.GetData(DataFormats.Text).ToString();
+            }
+        }
+
+        private void scintilla_UpdateUI(object sender, UpdateUIEventArgs e)
+        {
+            // Example of inline error detection for C#
+            var scintilla = sender as Scintilla;
+            if (scintilla != null)
+            {
+                scintilla.IndicatorClearRange(0, scintilla.TextLength);
+                scintilla.Indicators[0].Style = IndicatorStyle.Squiggle;
+                scintilla.Indicators[0].ForeColor = Color.Red;
+
+                // Simple example of detecting a missing semicolon
+                var lines = scintilla.Lines;
+                foreach (var line in lines)
+                {
+                    var text = line.Text.Trim();
+                    if (!string.IsNullOrEmpty(text) && !text.EndsWith(";") && !text.StartsWith("//") && !text.StartsWith("using") && !text.Contains("{") && !text.Contains("}"))
+                    {
+                        scintilla.IndicatorCurrent = 0;
+                        scintilla.IndicatorFillRange(line.Position, line.Length);
+                    }
+                }
+            }
+        }
+
+        private void splitViewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (scintilla2.Visible)
+            {
+                scintilla2.Visible = false;
+                scintilla1.Dock = DockStyle.Fill;
+            }
+            else
+            {
+                scintilla2.Visible = true;
+                scintilla1.Dock = DockStyle.Left;
+                scintilla1.Width = this.ClientSize.Width / 2;
+                scintilla2.Dock = DockStyle.Fill;
+            }
+        }
+
+        private void terminalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            terminalPanel.Visible = !terminalPanel.Visible;
+        }
+
+        private void terminalTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                string command = terminalTextBox.Lines.Last();
+                ExecuteCommand(command);
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
+        }
+
+        private void ExecuteCommand(string command)
+        {
+            // Simple command execution example
+            try
+            {
+                var processInfo = new System.Diagnostics.ProcessStartInfo("cmd.exe", "/c " + command)
+                {
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
+                };
+
+                var process = System.Diagnostics.Process.Start(processInfo);
+                process.OutputDataReceived += (sender, args) => terminalTextBox.AppendText(args.Data + Environment.NewLine);
+                process.BeginOutputReadLine();
+                process.ErrorDataReceived += (sender, args) => terminalTextBox.AppendText(args.Data + Environment.NewLine);
+                process.BeginErrorReadLine();
+                process.WaitForExit();
+            }
+            catch (Exception ex)
+            {
+                terminalTextBox.AppendText("Error: " + ex.Message + Environment.NewLine);
+            }
+        }
+
+        private void boldToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ApplyStyle(Style.Cpp.Word);
+        }
+
+        private void italicToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ApplyStyle(Style.Cpp.Word2);
+        }
+
+        private void underlineToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ApplyStyle(Style.Cpp.Character);
+        }
+
+        private void textColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                ApplyColor(colorDialog.Color);
+            }
+        }
+
+        private void ApplyStyle(int style)
+        {
+            scintilla1.StartStyling(scintilla1.SelectionStart);
+            scintilla1.SetStyling(scintilla1.SelectionEnd - scintilla1.SelectionStart, style);
+        }
+
+        private void ApplyColor(Color color)
+        {
+            scintilla1.Styles[Style.Default].ForeColor = color;
+            scintilla1.StyleClearAll();  // Apply the color change to all styles
+        }
+
+        private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (SettingsForm settingsForm = new SettingsForm())
+            {
+                settingsForm.ShowDialog(this);
+            }
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (IsShortcutPressed(e, Properties.Settings.Default.SaveShortcut))
+            {
+                saveToolStripMenuItem_Click(sender, e);
+                e.Handled = true;
+            }
+            // Add more shortcuts as needed
+        }
+
+        private bool IsShortcutPressed(KeyEventArgs e, string shortcut)
+        {
+            if (string.IsNullOrEmpty(shortcut)) return false;
+
+            var keys = shortcut.Split('+');
+            if (keys.Length != 2) return false;
+
+            bool ctrl = keys[0] == "Ctrl" && e.Control;
+            bool keyMatch = Enum.TryParse(keys[1], out Keys key) && e.KeyCode == key;
+
+            return ctrl && keyMatch;
+        }
+
+        private void LoadSettings()
+        {
+            // Set default shortcuts if they are not set
+            if (string.IsNullOrEmpty(Properties.Settings.Default.SaveShortcut))
+            {
+                Properties.Settings.Default.SaveShortcut = "Ctrl+S";
+                Properties.Settings.Default.Save();
             }
         }
     }

@@ -23,16 +23,27 @@
         private System.Windows.Forms.ToolStripMenuItem fontStyleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fontSizeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fontColorToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem richTextToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem boldToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem italicToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem underlineToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem textColorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem darkModeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem splitViewToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem terminalToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem findReplaceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem wordCountToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private ScintillaNET.Scintilla scintilla1;
+        private ScintillaNET.Scintilla scintilla2; // For split view
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.Panel terminalPanel;
+        private System.Windows.Forms.RichTextBox terminalTextBox;
 
         protected override void Dispose(bool disposing)
         {
@@ -65,18 +76,30 @@
             this.fontStyleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fontSizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fontColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.richTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.boldToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.italicToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.underlineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.textColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.darkModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.splitViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.terminalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findReplaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wordCountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.scintilla1 = new ScintillaNET.Scintilla();
+            this.scintilla2 = new ScintillaNET.Scintilla(); // For split view
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.terminalPanel = new System.Windows.Forms.Panel();
+            this.terminalTextBox = new System.Windows.Forms.RichTextBox();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
+            this.terminalPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -202,7 +225,8 @@
             this.fontToolStripMenuItem,
             this.fontStyleToolStripMenuItem,
             this.fontSizeToolStripMenuItem,
-            this.fontColorToolStripMenuItem});
+            this.fontColorToolStripMenuItem,
+            this.richTextToolStripMenuItem});
             this.formatToolStripMenuItem.Name = "formatToolStripMenuItem";
             this.formatToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
             this.formatToolStripMenuItem.Text = "Format";
@@ -242,10 +266,51 @@
             this.fontColorToolStripMenuItem.Text = "Font Color";
             this.fontColorToolStripMenuItem.Click += new System.EventHandler(this.fontColorToolStripMenuItem_Click);
             // 
+            // richTextToolStripMenuItem
+            // 
+            this.richTextToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.boldToolStripMenuItem,
+            this.italicToolStripMenuItem,
+            this.underlineToolStripMenuItem,
+            this.textColorToolStripMenuItem});
+            this.richTextToolStripMenuItem.Name = "richTextToolStripMenuItem";
+            this.richTextToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.richTextToolStripMenuItem.Text = "Rich Text";
+            // 
+            // boldToolStripMenuItem
+            // 
+            this.boldToolStripMenuItem.Name = "boldToolStripMenuItem";
+            this.boldToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.boldToolStripMenuItem.Text = "Bold";
+            this.boldToolStripMenuItem.Click += new System.EventHandler(this.boldToolStripMenuItem_Click);
+            // 
+            // italicToolStripMenuItem
+            // 
+            this.italicToolStripMenuItem.Name = "italicToolStripMenuItem";
+            this.italicToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.italicToolStripMenuItem.Text = "Italic";
+            this.italicToolStripMenuItem.Click += new System.EventHandler(this.italicToolStripMenuItem_Click);
+            // 
+            // underlineToolStripMenuItem
+            // 
+            this.underlineToolStripMenuItem.Name = "underlineToolStripMenuItem";
+            this.underlineToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.underlineToolStripMenuItem.Text = "Underline";
+            this.underlineToolStripMenuItem.Click += new System.EventHandler(this.underlineToolStripMenuItem_Click);
+            // 
+            // textColorToolStripMenuItem
+            // 
+            this.textColorToolStripMenuItem.Name = "textColorToolStripMenuItem";
+            this.textColorToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.textColorToolStripMenuItem.Text = "Text Color";
+            this.textColorToolStripMenuItem.Click += new System.EventHandler(this.textColorToolStripMenuItem_Click);
+            // 
             // viewToolStripMenuItem
             // 
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.darkModeToolStripMenuItem});
+            this.darkModeToolStripMenuItem,
+            this.splitViewToolStripMenuItem,
+            this.terminalToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "View";
@@ -257,11 +322,26 @@
             this.darkModeToolStripMenuItem.Text = "Dark Mode";
             this.darkModeToolStripMenuItem.Click += new System.EventHandler(this.darkModeToolStripMenuItem_Click);
             // 
+            // splitViewToolStripMenuItem
+            // 
+            this.splitViewToolStripMenuItem.Name = "splitViewToolStripMenuItem";
+            this.splitViewToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.splitViewToolStripMenuItem.Text = "Split View";
+            this.splitViewToolStripMenuItem.Click += new System.EventHandler(this.splitViewToolStripMenuItem_Click);
+            // 
+            // terminalToolStripMenuItem
+            // 
+            this.terminalToolStripMenuItem.Name = "terminalToolStripMenuItem";
+            this.terminalToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.terminalToolStripMenuItem.Text = "Terminal";
+            this.terminalToolStripMenuItem.Click += new System.EventHandler(this.terminalToolStripMenuItem_Click);
+            // 
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.findReplaceToolStripMenuItem,
-            this.wordCountToolStripMenuItem});
+            this.wordCountToolStripMenuItem,
+            this.settingsToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -269,16 +349,23 @@
             // findReplaceToolStripMenuItem
             // 
             this.findReplaceToolStripMenuItem.Name = "findReplaceToolStripMenuItem";
-            this.findReplaceToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.findReplaceToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
             this.findReplaceToolStripMenuItem.Text = "Find/Replace";
             this.findReplaceToolStripMenuItem.Click += new System.EventHandler(this.findReplaceToolStripMenuItem_Click);
             // 
             // wordCountToolStripMenuItem
             // 
             this.wordCountToolStripMenuItem.Name = "wordCountToolStripMenuItem";
-            this.wordCountToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.wordCountToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
             this.wordCountToolStripMenuItem.Text = "Word Count";
             this.wordCountToolStripMenuItem.Click += new System.EventHandler(this.wordCountToolStripMenuItem_Click);
+            // 
+            // settingsToolStripMenuItem
+            // 
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.settingsToolStripMenuItem.Text = "Settings";
+            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -307,6 +394,19 @@
             this.scintilla1.DragDrop += new System.Windows.Forms.DragEventHandler(this.scintilla1_DragDrop);
             this.scintilla1.AllowDrop = true;
             // 
+            // scintilla2
+            // 
+            this.scintilla2.Dock = System.Windows.Forms.DockStyle.Right;
+            this.scintilla2.Location = new System.Drawing.Point(400, 24);
+            this.scintilla2.Name = "scintilla2";
+            this.scintilla2.Size = new System.Drawing.Size(400, 404);
+            this.scintilla2.TabIndex = 1;
+            this.scintilla2.WrapMode = ScintillaNET.WrapMode.None;
+            this.scintilla2.DragEnter += new System.Windows.Forms.DragEventHandler(this.scintilla1_DragEnter);
+            this.scintilla2.DragDrop += new System.Windows.Forms.DragEventHandler(this.scintilla1_DragDrop);
+            this.scintilla2.AllowDrop = true;
+            this.scintilla2.Visible = false;
+            // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -322,25 +422,47 @@
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
             // 
+            // terminalPanel
+            // 
+            this.terminalPanel.Controls.Add(this.terminalTextBox);
+            this.terminalPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.terminalPanel.Location = new System.Drawing.Point(0, 300);
+            this.terminalPanel.Name = "terminalPanel";
+            this.terminalPanel.Size = new System.Drawing.Size(800, 100);
+            this.terminalPanel.TabIndex = 3;
+            this.terminalPanel.Visible = false;
+            // 
+            // terminalTextBox
+            // 
+            this.terminalTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.terminalTextBox.Location = new System.Drawing.Point(0, 0);
+            this.terminalTextBox.Name = "terminalTextBox";
+            this.terminalTextBox.Size = new System.Drawing.Size(800, 100);
+            this.terminalTextBox.TabIndex = 0;
+            this.terminalTextBox.Text = "";
+            this.terminalTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.terminalTextBox_KeyDown);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 428);
+            this.Controls.Add(this.terminalPanel);
             this.Controls.Add(this.scintilla1);
+            this.Controls.Add(this.scintilla2);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "QuickEdit";
-            this.Load += new System.EventHandler(this.Form1_Load); // Ensure this line exists to link the Load event
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            this.terminalPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
     }
 }
