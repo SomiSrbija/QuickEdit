@@ -3,7 +3,7 @@
 QuickEdit is a powerful yet simple text editor built using C# and the .NET Framework with a rich set of features including syntax highlighting, code folding, rich text editing, terminal emulator, inline error detection, split view, customizable keyboard shortcuts, and much more. 
 
 ## Roadmap
-Track bugs and features that are currently being worked/fixed on via this link [Project]https://github.com/users/SomiSrbija/projects/1/views/1
+Track bugs and features that are currently being worked/fixed on via this link [Project](https://github.com/users/SomiSrbija/projects/1/views/1)
 
 ## Features
 
