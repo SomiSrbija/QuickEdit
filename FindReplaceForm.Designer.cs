@@ -107,6 +107,8 @@
             this.Text = "Find and Replace";
             this.ResumeLayout(false);
             this.PerformLayout();
+
+
         }
     }
 }

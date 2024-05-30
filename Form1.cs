@@ -4,6 +4,8 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Drawing;
 using ScintillaNET;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace QuickEdit
 {
@@ -11,6 +13,7 @@ namespace QuickEdit
     {
         private string currentFile = string.Empty;
         private bool isDarkMode = false;
+        private Process terminalProcess;
 
         public Form1()
         {
@@ -103,6 +106,7 @@ namespace QuickEdit
         {
             toolStripStatusLabel1.Text = message;
         }
+
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -388,6 +392,14 @@ namespace QuickEdit
         private void terminalToolStripMenuItem_Click(object sender, EventArgs e)
         {
             terminalPanel.Visible = !terminalPanel.Visible;
+            if (terminalPanel.Visible)
+            {
+                StartTerminal();
+            }
+            else
+            {
+                StopTerminal();
+            }
         }
 
         private void terminalTextBox_KeyDown(object sender, KeyEventArgs e)
@@ -401,29 +413,59 @@ namespace QuickEdit
             }
         }
 
+        private async void StartTerminal()
+        {
+            terminalProcess = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "cmd.exe",
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                },
+                EnableRaisingEvents = true
+            };
+
+            terminalProcess.OutputDataReceived += (sender, args) => AppendTerminalOutput(args.Data);
+            terminalProcess.ErrorDataReceived += (sender, args) => AppendTerminalOutput(args.Data);
+
+            terminalProcess.Start();
+            terminalProcess.BeginOutputReadLine();
+            terminalProcess.BeginErrorReadLine();
+
+            await Task.Run(() => terminalProcess.WaitForExit());
+        }
+
+        private void StopTerminal()
+        {
+            if (terminalProcess != null && !terminalProcess.HasExited)
+            {
+                terminalProcess.Kill();
+                terminalProcess = null;
+            }
+        }
+
         private void ExecuteCommand(string command)
         {
-            // Simple command execution example
-            try
+            if (terminalProcess != null && !terminalProcess.HasExited)
             {
-                var processInfo = new System.Diagnostics.ProcessStartInfo("cmd.exe", "/c " + command)
-                {
-                    CreateNoWindow = true,
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true
-                };
-
-                var process = System.Diagnostics.Process.Start(processInfo);
-                process.OutputDataReceived += (sender, args) => terminalTextBox.AppendText(args.Data + Environment.NewLine);
-                process.BeginOutputReadLine();
-                process.ErrorDataReceived += (sender, args) => terminalTextBox.AppendText(args.Data + Environment.NewLine);
-                process.BeginErrorReadLine();
-                process.WaitForExit();
+                terminalProcess.StandardInput.WriteLine(command);
+                terminalProcess.StandardInput.Flush();
             }
-            catch (Exception ex)
+        }
+
+        private void AppendTerminalOutput(string output)
+        {
+            if (InvokeRequired)
             {
-                terminalTextBox.AppendText("Error: " + ex.Message + Environment.NewLine);
+                Invoke(new Action<string>(AppendTerminalOutput), output);
+            }
+            else
+            {
+                terminalTextBox.AppendText(output + Environment.NewLine);
             }
         }
 
@@ -502,6 +544,68 @@ namespace QuickEdit
                 Properties.Settings.Default.SaveShortcut = "Ctrl+S";
                 Properties.Settings.Default.Save();
             }
+        }
+
+        private void Form1_Load_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ApplyTheme(bool darkMode)
+        {
+            if (darkMode)
+            {
+                this.BackColor = Color.FromArgb(45, 45, 48);
+                menuStrip1.BackColor = Color.FromArgb(28, 28, 28);
+                menuStrip1.ForeColor = Color.White;
+                toolStrip1.BackColor = Color.FromArgb(28, 28, 28);
+                toolStrip1.ForeColor = Color.White;
+                statusStrip1.BackColor = Color.FromArgb(28, 28, 28);
+                statusStrip1.ForeColor = Color.White;
+                scintilla1.Styles[Style.Default].BackColor = Color.FromArgb(30, 30, 30);
+                scintilla1.Styles[Style.Default].ForeColor = Color.White;
+                scintilla2.Styles[Style.Default].BackColor = Color.FromArgb(30, 30, 30);
+                scintilla2.Styles[Style.Default].ForeColor = Color.White;
+                terminalTextBox.BackColor = Color.FromArgb(30, 30, 30);
+                terminalTextBox.ForeColor = Color.White;
+            }
+            else
+            {
+                this.BackColor = Color.White;
+                menuStrip1.BackColor = Color.LightGray;
+                menuStrip1.ForeColor = Color.Black;
+                toolStrip1.BackColor = Color.LightGray;
+                toolStrip1.ForeColor = Color.Black;
+                statusStrip1.BackColor = Color.LightGray;
+                statusStrip1.ForeColor = Color.Black;
+                scintilla1.Styles[Style.Default].BackColor = Color.White;
+                scintilla1.Styles[Style.Default].ForeColor = Color.Black;
+                scintilla2.Styles[Style.Default].BackColor = Color.White;
+                scintilla2.Styles[Style.Default].ForeColor = Color.Black;
+                terminalTextBox.BackColor = Color.White;
+                terminalTextBox.ForeColor = Color.Black;
+            }
+            scintilla1.StyleClearAll();
+            scintilla2.StyleClearAll();
+        }
+
+
+        private void redoToolStripButton_Click(object sender, EventArgs e)
+        {
+            if (scintilla1.CanRedo)
+            {
+                scintilla1.Redo();
+            }
+        }
+
+        private void Form1_Load_2(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Form1_Load_3(object sender, EventArgs e)
+        {
+
         }
     }
 }
